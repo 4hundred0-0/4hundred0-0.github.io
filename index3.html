@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rachel Huang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black:  #0a0a0a;
+      --ash:    #141414;
+      --smoke:  #1e1e1e;
+      --ember:  #c8622a;
+      --bone:   #e2d9cc;
+      --dim:    #6a6560;
+      --serif:  'Cormorant Garamond', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--bone);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND PATTERN ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        /* sparse diagonal lines */
+        repeating-linear-gradient(
+          118deg,
+          transparent,
+          transparent 120px,
+          rgba(255,255,255,0.018) 120px,
+          rgba(255,255,255,0.018) 121px
+        ),
+        /* fine horizontal hairlines */
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 72px,
+          rgba(255,255,255,0.012) 72px,
+          rgba(255,255,255,0.012) 73px
+        );
+    }
+
+    /* subtle corner grain texture via svg data-uri */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 48px;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.92) 0%, transparent 100%);
+      backdrop-filter: blur(0px);
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 17px;
+      letter-spacing: 0.08em;
+      color: var(--bone);
+      text-decoration: none;
+      font-weight: 300;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 36px;
+    }
+
+    nav ul a {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+    nav ul a:hover { color: var(--bone); }
+
+    /* ── PAGE WRAPPER ── */
+    .page { position: relative; z-index: 1; }
+
+    /* ── HOME / EDITORIAL LAYOUT ── */
+    #home {
+      min-height: 100vh;
+      padding: 0 48px 80px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header strip */
+    .home-header {
+      padding-top: 110px;
+      padding-bottom: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      gap: 40px;
+      border-bottom: 1px solid var(--smoke);
+      margin-bottom: 0;
+    }
+
+    .home-name {
+      font-family: var(--serif);
+      font-size: clamp(52px, 8vw, 110px);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--bone);
+    }
+
+    .home-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 20px;
+      padding-bottom: 4px;
+    }
+
+    .home-quote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(13px, 1.4vw, 16px);
+      color: var(--dim);
+      line-height: 1.9;
+      border-left: 1px solid var(--ember);
+      padding-left: 16px;
+    }
+    .home-quote em { color: var(--ember); font-style: normal; }
+
+    .work-nav {
+      display: flex;
+      gap: 0;
+      width: fit-content;
+    }
+
+    .work-nav-btn {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 9px 20px;
+      transition: all 0.2s;
+    }
+
+    /* Both buttons share the same two visual states — selected or unselected.
+       Selected (active) = solid orange fill.
+       Unselected        = black bg + orange border. */
+
+    .work-nav-btn.btn-cine,
+    .work-nav-btn.btn-photo {
+      background: var(--black);
+      color: var(--bone);
+      border: 1px solid var(--ember);
+    }
+
+    .work-nav-btn.btn-cine.active,
+    .work-nav-btn.btn-photo.active {
+      background: var(--ember);
+      color: #fff;
+      border: 1px solid var(--ember);
+    }
+
+    /* ── WORK GRID ── */
+    .work-section { padding-top: 0; }
+
+    .work-panel { display: none; }
+    .work-panel.active { display: block; }
+
+    /* Masonry-like flexible rows */
+    .work-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+
+    /* Each row can hold 1, 2, or 3 items */
+    .work-row {
+      display: grid;
+      gap: 0px;
+    }
+    .work-row.cols-1 { grid-template-columns: 1fr; }
+    .work-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .work-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .work-row.cols-2-1 { grid-template-columns: 2fr 1fr; }
+    .work-row.cols-1-2 { grid-template-columns: 1fr 2fr; }
+
+    .work-item {
+      position: relative;
+      overflow: hidden;
+      background: var(--ash);
+      cursor: pointer;
+    }
+
+    /* height variants */
+    .work-item.tall  { aspect-ratio: 3/4; }
+    .work-item.taller  { aspect-ratio: 9/16; }
+    .work-item.wide  { aspect-ratio: 16/9; }
+    .work-item.sq    { aspect-ratio: 1/1; }
+    .work-item.std   { aspect-ratio: 4/3; }
+    .work-item.film   { aspect-ratio: 3/2; }
+    .work-item.cine  { aspect-ratio: 2.35/1.20; } /* anamorphic — no cropping on 2.35:1 images */
+
+    .work-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      transition: transform 0.55s ease;
+      display: block;
+    }
+    .work-item {
+     transition: transform 0.4s ease;
+    }
+    .work-item:hover { transform: scale(1.05); }
+
+    /* Project label for cinematography */
+    .project-label {
+      padding: 10px 0 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-top: 1px solid var(--smoke);
+      margin-top: 0;
+    }
+
+    .project-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: var(--bone);
+      font-weight: 300;
+      /* EDIT: replace placeholder text */
+    }
+
+    .project-year {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--ember);
+    }
+
+    .project-block { margin-bottom: 32px; }
+    .project-block:last-child { margin-bottom: 0; }
+
+    /* photo grid — no project labels */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 2px;
+    }
+    .photo-grid .work-item { aspect-ratio: 3/4; }
+
+    /* placeholder */
+    .ph {
+      background: var(--ash);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ph span {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .sec-divider {
+      border: none;
+      border-top: 1px solid var(--smoke);
+      margin: 0;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      position: relative;
+    }
+
+    .about-visual {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--black);
+    }
+
+    .about-visual img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .about-visual-ph {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .about-visual-ph span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+
+    /* decorative dot grid on about side */
+    .about-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(200,98,42,0.15) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .about-text {
+      padding: 100px 64px 80px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .section-eyebrow::after {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--ember);
+      opacity: 0.5;
+    }
+
+    .about-name {
+      font-family: var(--serif);
+      font-size: clamp(36px, 4vw, 58px);
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--bone);
+      margin-bottom: 36px;
+    }
+
+    .about-intro {
+      font-family: var(--serif);
+      font-size: clamp(15px, 1.5vw, 18px);
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--dim);
+      margin-bottom: 36px;
+    }
+
+    .about-intro em {
+      font-style: italic;
+      color: var(--bone);
+    }
+
+    .about-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-top: 1px solid var(--smoke);
+      padding-top: 28px;
+    }
+
+    .about-meta-line {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      color: var(--ember);
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 48px;
+      position: relative;
+      text-align: center;
+    }
+
+    /* horizontal rule pattern behind contact */
+    #contact::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.012) 40px,
+        rgba(255,255,255,0.012) 41px
+      );
+      pointer-events: none;
+    }
+
+    .contact-heading {
+      font-family: var(--serif);
+      font-size: clamp(40px, 7vw, 88px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--bone);
+      line-height: 1;
+      margin-bottom: 52px;
+      position: relative;
+    }
+
+    .contact-items {
+      display: flex;
+      gap: 72px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .contact-item { text-align: center; }
+
+    .contact-item-label {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 10px;
+    }
+
+    .contact-item a {
+      font-family: var(--serif);
+      font-size: clamp(14px, 1.5vw, 17px);
+      color: var(--bone);
+      text-decoration: none;
+      font-weight: 300;
+      transition: color 0.25s;
+    }
+    .contact-item a:hover { color: var(--ember); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--smoke);
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+    footer span { font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
+
+    /* ── WORK TAB LABEL ROW ── */
+    .work-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0 16px;
+      border-bottom: 1px solid var(--smoke);
+      margin-bottom: 24px;
+    }
+    .work-label-row .section-eyebrow { margin-bottom: 0; }
+
+    /* ── SCROLL PROGRESS ── */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: var(--ember);
+      z-index: 300;
+      transition: width 0.08s linear;
+    }
+
+    /* ── FADE IN ── */
+    .fi { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fi.on { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      #home { padding: 0 24px 60px; }
+      .home-header { grid-template-columns: 1fr; padding-top: 88px; }
+      #about { grid-template-columns: 1fr; }
+      .about-visual { position: relative; height: auto; }
+      .about-visual img { height: auto; object-fit: contain; }
+      .about-visual { position: relative; height: auto; max-width: 40%; margin-left: 0 ; }
+      .about-text { padding: 48px 24px; }
+      .contact-items { gap: 40px; }
+      footer { padding: 20px 24px; }
+      .photo-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="page">
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo"></a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HOME — editorial magazine layout
+═══════════════════════════════════════ -->
+<section id="home">
+
+  <!-- Name + quote header -->
+  <div class="home-header">
+    <h1 class="home-name">Rachel<br/>Huang</h1>
+    <div class="home-right">
+      <p class="home-quote">
+        We write, to taste life twice.<br/>
+        We film it — to live <em>inside</em>.
+      </p>
+      <!-- Work subsection tabs -->
+      <div class="work-nav">
+        <button class="work-nav-btn btn-cine active" onclick="switchTab('cine', this)">Cinematography</button>
+        <button class="work-nav-btn btn-photo" onclick="switchTab('photo', this)">Photography</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CINEMATOGRAPHY ── -->
+  <div id="tab-cine" class="work-panel active work-section">
+
+    <!--
+    ╔══════════════════════════════════════════╗
+    ║  HOW TO ADD A CINEMATOGRAPHY PROJECT     ║
+    ║                                          ║
+    ║  Copy a .project-block and:              ║
+    ║  1. Edit project-name and project-year   ║
+    ║  2. Choose a row layout class:           ║
+    ║     cols-1 / cols-2 / cols-3 /           ║
+    ║     cols-2-1 / cols-1-2                  ║
+    ║  3. Choose item height class:            ║
+    ║     .wide (16:9) / .std (4:3) /          ║
+    ║     .sq (1:1) / .tall (3:4) /            ║
+    ║     .cine (2.35:1 anamorphic)            ║
+    ║  4. Replace <div class="ph"> with:       ║
+    ║     <img src="images/x.jpg" alt="..."/>  ║
+    ╚══════════════════════════════════════════╝
+    -->
+<!-- PROJECT 1 -->
+<div class="project-block">
+  <div class="project-label">
+    <span class="project-name">SPRING SPRANG</span>
+    <span class="project-year">Director/DoP · 2025</span>
+  </div>
+  <div class="work-rows" style="gap: 42px;">
+
+    <!-- Row 1: single column -->
+    <div class="work-row cols-1">
+      <div class="work-item cine">
+        <img src="images/SS1.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 2: single column -->
+    <div class="work-row cols-1">
+      <div class="work-item cine">
+        <img src="images/SS6.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 3: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item cine">
+        <img src="images/SS2.jpg" alt="" />
+      </div>
+      <div class="work-item cine">
+        <img src="images/SS3.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 4: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item cine">
+        <img src="images/SS9.jpg" alt="" />
+      </div>
+      <div class="work-item cine">
+        <img src="images/SS16.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 7: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item cine">
+        <img src="images/SS17.jpg" alt="" />
+      </div>
+      <div class="work-item cine">
+        <img src="images/SS18.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 8: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item cine">
+        <img src="images/SS19.jpg" alt="" />
+      </div>
+      <div class="work-item cine">
+        <img src="images/SS21.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 9: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item cine">
+        <img src="images/SS23.jpg" alt="" />
+      </div>
+      <div class="work-item cine">
+        <img src="images/SS27.jpg" alt="" />
+      </div>
+    </div>
+
+     <!-- Row 11: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item cine">
+        <img src="images/SS28.jpg" alt="" />
+      </div>
+      <div class="work-item cine">
+        <img src="images/SS29.jpg" alt="" />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    <!-- PROJECT 2 -->
+    <div class="project-block">
+      <div class="project-label">
+        <span class="project-name">ISKRA</span><!-- EDIT -->
+        <span class="project-year">DoP · 2025</span><!-- EDIT -->
+      </div>
+      <div class="work-rows" style="gap: 42px;">
+
+    <!-- Row 1: single column -->
+    <div class="work-row cols-1">
+      <div class="work-item wide">
+        <img src="images/IS1.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 2: single column -->
+    <div class="work-row cols-1">
+      <div class="work-item wide">
+        <img src="images/IS2.jpg" alt="" />
+      </div>
+    </div>
+
+    <!-- Row 3: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item wide">
+        <img src="images/IS4.jpg" alt="" />
+      </div>
+      <div class="work-item wide">
+        <img src="images/IS5.jpg" alt="" />
+      </div>
+    </div>
+
+      <!-- Row 4: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item wide">
+        <img src="images/IS6.jpg" alt="" />
+      </div>
+      <div class="work-item wide">
+        <img src="images/IS7.jpg" alt="" />
+      </div>
+    </div>
+
+      <!-- Row 5: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item wide">
+        <img src="images/IS8.jpg" alt="" />
+      </div>
+      <div class="work-item wide">
+        <img src="images/IS9.jpg" alt="" />
+      </div>
+    </div>
+
+      <!-- Row 6: two columns -->
+    <div class="work-row cols-2" style="gap: 24px;">
+      <div class="work-item wide">
+        <img src="images/IS10.jpg" alt="" />
+      </div>
+      <div class="work-item wide">
+        <img src="images/IS12.jpg" alt="" />
+      </div>
+    </div>
+
+  </div><!-- closes PROJECT 2 work-rows -->
+  </div><!-- closes PROJECT 2 project-block -->
+
+    <!-- PROJECT 3 -->
+    <div class="project-block">
+      <div class="project-label">
+        <span class="project-name">A TALK</span>
+        <span class="project-year">Director/DoP · 2025</span>
+      </div>
+      <div class="work-rows" style="gap: 42px;">
+
+        <div class="work-row cols-1">
+          <div class="work-item std">
+            <img src="images/AT1.jpg" alt="" />
+          </div>
+        </div>
+
+        <div class="work-row cols-2" style="gap: 24px;">
+          <div class="work-item std">
+            <img src="images/AT2.jpg" alt="" />
+          </div>
+          <div class="work-item std">
+            <img src="images/AT4.jpg" alt="" />
+          </div>
+        </div>
+
+        <div class="work-row cols-1">
+          <div class="work-item std">
+            <img src="images/AT5.jpg" alt="" />
+          </div>
+        </div>
+
+        <div class="work-row cols-2" style="gap: 24px;">
+          <div class="work-item std">
+            <img src="images/AT7.jpg" alt="" />
+          </div>
+          <div class="work-item std">
+            <img src="images/AT8.jpg" alt="" />
+          </div>
+        </div>
+
+      </div><!-- closes PROJECT 3 work-rows -->
+    </div><!-- closes PROJECT 3 project-block -->
+
+    <!-- PROJECT 4 -->
+    <div class="project-block">
+      <div class="project-label">
+        <span class="project-name">THE LAST TAKE</span>
+        <span class="project-year">DoP · 2025</span>
+      </div>
+      <div class="work-rows" style="gap: 42px;">
+
+        <div class="work-row cols-2" style="gap: 24px;">
+          <div class="work-item std">
+            <img src="images/TL2.jpg" alt="" />
+          </div>
+          <div class="work-item std">
+            <img src="images/TL3.jpg" alt="" />
+          </div>
+        </div>
+
+        <div class="work-row cols-2" style="gap: 24px;">
+          <div class="work-item std">
+            <img src="images/TL5.jpg" alt="" />
+          </div>
+          <div class="work-item std">
+            <img src="images/TL6.jpg" alt="" />
+          </div>
+        </div>
+
+      </div><!-- closes PROJECT 4 work-rows -->
+    </div><!-- closes PROJECT 4 project-block -->
+
+  </div><!-- closes tab-cine -->
+
+  <!-- ── PHOTOGRAPHY ── -->
+  <div id="tab-photo" class="work-panel work-section">
+    <!--
+      TO ADD PHOTOS: replace .ph divs with <img> tags.
+      You can add more .work-item divs freely — the grid wraps automatically.
+    -->
+    <div class="work-rows" style="gap: 16px;">
+
+  <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item wide">
+      <img src="images/P1.JPG" alt="" />
+    </div>
+  </div>
+
+  <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item wide">
+      <img src="images/P2.JPG" alt="" />
+    </div>
+    <div class="work-item wide">
+      <img src="images/P3.JPG" alt="" />
+    </div>
+  </div>
+
+   <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item wide">
+      <img src="images/P4.JPG" alt="" />
+    </div>
+    <div class="work-item wide">
+      <img src="images/P5.JPG" alt="" />
+    </div>
+  </div>
+
+  <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item wide">
+      <img src="images/P6.jpg" alt="" />
+    </div>
+  </div>
+
+  <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item wide">
+      <img src="images/P7.JPG" alt="" />
+    </div>
+    <div class="work-item wide">
+      <img src="images/P9.jpg" alt="" />
+    </div>
+  </div>
+
+ <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item wide">
+      <img src="images/P10.JPG" alt="" />
+    </div>
+    <div class="work-item wide">
+      <img src="images/P13.jpg" alt="" />
+    </div>
+  </div>
+
+ <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item wide">
+      <img src="images/P11.JPG" alt="" />
+    </div>
+    <div class="work-item wide">
+      <img src="images/P14.jpg" alt="" />
+    </div>
+  </div>
+
+  <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item wide">
+      <img src="images/P16.JPG" alt="" />
+    </div>
+  </div>
+
+ <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item wide">
+      <img src="images/P17.jpg" alt="" />
+    </div>
+    <div class="work-item wide">
+      <img src="images/P18.jpg" alt="" />
+    </div>
+  </div>
+
+ <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item tall">
+      <img src="images/P28.jpg" alt="" />
+    </div>
+    <div class="work-item tall">
+      <img src="images/P40.jpg" alt="" />
+    </div>
+  </div>
+
+ <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P23.JPG" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P25.JPEG" alt="" />
+    </div>
+  </div>
+
+   <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P24.JPEG" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P26.JPEG" alt="" />
+    </div>
+  </div>
+
+   <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P27.JPEG" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P29.JPEG" alt="" />
+    </div>
+  </div>
+
+  <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item film">
+      <img src="images/P30.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P35.jpg" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P36.jpg" alt="" />
+    </div>
+  </div>
+
+  <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P37.JPEG" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P39.JPEG" alt="" />
+    </div>
+  </div>
+
+  <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item film">
+      <img src="images/P33.JPEG" alt="" />
+    </div>
+  </div>
+
+  <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item tall">
+      <img src="images/P48.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P44.JPEG" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P57.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P50.JPEG" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P54.JPEG" alt="" />
+    </div>
+  </div>
+
+    <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item film">
+      <img src="images/P55.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item tall">
+      <img src="images/P43.jpg" alt="" />
+    </div>
+    <div class="work-item tall">
+      <img src="images/P56.jpg" alt="" />
+    </div>
+  </div>
+
+   <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item film">
+      <img src="images/P47.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item tall">
+      <img src="images/P61.jpg" alt="" />
+    </div>
+    <div class="work-item tall">
+      <img src="images/P62.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P63.jpg" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P49.JPEG" alt="" />
+    </div>
+  </div>
+
+     <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item film">
+      <img src="images/P59.jpg" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P69.jpg" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P45.jpg" alt="" />
+    </div>
+  </div>
+
+       <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item film">
+      <img src="images/P67.JPEG" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item film">
+      <img src="images/P68.jpg" alt="" />
+    </div>
+    <div class="work-item film">
+      <img src="images/P66.JPEG" alt="" />
+    </div>
+  </div>
+
+       <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item cine">
+      <img src="images/P76.JPG" alt="" />
+    </div>
+  </div>
+
+    <!-- two column row -->
+  <div class="work-row cols-2" style="gap: 10px;">
+    <div class="work-item tall">
+      <img src="images/P73.jpg" alt="" />
+    </div>
+    <div class="work-item tall">
+      <img src="images/P74.jpeg" alt="" />
+    </div>
+  </div>
+
+         <!-- single column row -->
+  <div class="work-row cols-1">
+    <div class="work-item taller">
+      <img src="images/P71.jpg" alt="" />
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+</section>
+
+<hr class="sec-divider"/>
+
+<!-- ══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+<section id="about">
+
+<div class="about-visual fi">
+  <img src="images/portrait.jpeg" alt="Rachel Huang" />
+</div>
+
+  <div class="about-text">
+    <div class="section-eyebrow">About</div>
+    <h2 class="about-name fi">Rachel<br/>Huang</h2>
+
+    <p class="about-intro fi">
+      Someone who was 'reckless' enough to drop Finance for Filmmaking.<br/>
+      Someone who believes that creating is all about being honest to yourself, and will lead the way towards healing.
+    </p>
+
+    <div class="about-meta fi">
+      <!-- EDIT these lines freely -->
+      <div class="about-meta-line">MFA in Film, TV and Digital Media</div>
+      <div class="about-meta-line">BEc in International Finance</div>
+      <div style="width:32px; height:1px; background:var(--ember); opacity:0.4; margin: 6px 0;"></div>
+      <div class="about-meta-line">Based in Prague / Hong Kong</div>
+    </div>
+  </div>
+
+</section>
+
+<hr class="sec-divider"/>
+
+<!-- ══════════════════════════════════════
+     CONTACT
+═══════════════════════════════════════ -->
+<section id="contact">
+  <h2 class="contact-heading fi">Contact</h2>
+  <div class="contact-items">
+    <div class="contact-item fi">
+      <div class="contact-item-label">Email</div>
+      <!-- EDIT: your email -->
+      <a href="mailto:rachelhuang305581@gmail.com">rachelhuang305581@gmail.com</a>
+    </div>
+    <div class="contact-item fi">
+      <div class="contact-item-label">Instagram</div>
+      <!-- EDIT: your handle -->
+      <a href="https://www.instagram.com/4hundred0_0" target="_blank">@4hundred0_0</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Rachel Huang</span>
+  <span>Cinematography · Photography</span>
+</footer>
+
+</div><!-- .page -->
+
+<script>
+  // Tab switching
+  function switchTab(name, btn) {
+    document.querySelectorAll('.work-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.work-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Scroll progress bar
+  const progressBar = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  });
+
+  // Scroll fade-in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
