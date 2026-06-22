@@ -233,10 +233,7 @@
       transition: transform 0.55s ease;
       display: block;
     }
-    .work-item {
-     transition: transform 0.4s ease;
-    }
-    .work-item:hover { transform: scale(1.05); }
+    .work-item { cursor: pointer; }
 
     /* Project label for cinematography */
     .project-label {
@@ -400,6 +397,7 @@
       font-size: 15px;
       letter-spacing: 0.03em;
       color: var(--ember);
+      text-align: right;    
     }
 
     /* ── CONTACT ── */
@@ -528,6 +526,37 @@
       border: 1px solid var(--ember);
     }
 
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      cursor: default;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 24px; right: 32px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .lightbox-close:hover { color: var(--bone); }
+    
     /* ── FADE IN ── */
     .fi { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .fi.on { opacity: 1; transform: none; }
@@ -1105,16 +1134,6 @@
     </div>
   </div>
 
-    <!-- two column row -->
-  <div class="work-row cols-2" style="gap: 10px;">
-    <div class="work-item tall">
-      <img src="images/P73.jpg" alt="" />
-    </div>
-    <div class="work-item tall">
-      <img src="images/P74.jpeg" alt="" />
-    </div>
-  </div>
-
          <!-- single column row -->
   <div class="work-row cols-1">
     <div class="work-item taller">
@@ -1122,6 +1141,12 @@
     </div>
   </div>
 
+  <div class="photo-prompt">
+    <button class="photo-prompt-btn" onclick="switchTab('cine', document.querySelector('.btn-cine')); window.scrollTo({top: 0, behavior: 'smooth'});">
+      ← Back to Cinematography
+    </button>
+  </div>
+      
 </div>
 </div>
 
@@ -1186,9 +1211,39 @@
   <span>Cinematography · Photography</span>
 </footer>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <span class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">Close ✕</span>
+  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+  
 </div><!-- .page -->
 
 <script>
+  // Lightbox
+  document.querySelectorAll('.work-item img').forEach(img => {
+    img.addEventListener('click', () => {
+      document.getElementById('lightboxImg').src = img.src;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox(e) {
+    if (e.target !== document.getElementById('lightboxImg')) {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  
   // Tab switching
   function switchTab(name, btn) {
     document.querySelectorAll('.work-panel').forEach(p => p.classList.remove('active'));
