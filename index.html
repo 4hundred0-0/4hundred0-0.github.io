@@ -323,15 +323,9 @@
     }
     .about-visual-ph span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
 
-    /* decorative dot grid on about side */
-    .about-visual::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle, rgba(200,98,42,0.15) 1px, transparent 1px);
-      background-size: 28px 28px;
-      pointer-events: none;
-      mix-blend-mode: screen;
+    /* decorative dot grid on about side - non */
+     .about-visual::after {
+      display: none;
     }
 
     .about-text {
@@ -569,7 +563,7 @@
       #about { grid-template-columns: 1fr; }
       .about-visual { position: relative; height: auto; }
       .about-visual img { height: auto; object-fit: contain; }
-      .about-visual { position: relative; height: auto; max-width: 60%; margin-left: 0 ; }
+      .about-visual { position: relative; height: auto; max-width: 40%; margin-left: 0 ; }
       .about-text { padding: 48px 24px; }
       .contact-items { gap: 40px; }
       footer { padding: 20px 24px; }
