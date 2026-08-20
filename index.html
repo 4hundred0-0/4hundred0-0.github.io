@@ -550,6 +550,19 @@
       transition: color 0.2s;
     }
     .lightbox-close:hover { color: var(--bone); }
+
+    /* ── IMAGE PROTECTION ── */
+    .work-item img {
+      -webkit-user-drag: none;
+      user-drag: none;
+      pointer-events: none;
+    }
+    .work-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }    
     
     /* ── FADE IN ── */
     .fi { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
@@ -1254,6 +1267,12 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+
+  // Disable right-click
+  document.addEventListener('contextmenu', e => {
+    if (e.target.tagName === 'IMG') e.preventDefault();
+  });
+
 </script>
 </body>
 </html>
